@@ -15,10 +15,10 @@ An interactive UI tool designed to dynamically generate a single sentence summar
 
 | Element                  | Color Code | Usage                                                  |
 |--------------------------|------------|--------------------------------------------------------|
-| Action Count             | #9D615C    | 📌 1 action (not "pending")                            |
-| Onboarding Progress      | #A1B55C    | 🌀 25% left (not "Your onboarding is")                 |
-| Meeting Info             | #C7A865    | 🗓️ 1 meeting today / 🗓️ 1 upcoming meeting (not "in X days") |
-| Outdated Portfolio Alert | #808FA3    | ⏱️ outdated (not "some of your portfolio may be")      |
+| Action Count             | #9D615C    | 📌 1 action                           |
+| Onboarding Progress      | #A1B55C    | 🌀 25% left                 |
+| Meeting Info             | #C7A865    | 🗓️ 1 meeting today / 🗓️ 1 upcoming meeting  |
+| Outdated Portfolio Alert | #808FA3    | ⏱️ outdated      |
 
 ## Getting Started
 
