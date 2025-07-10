@@ -36,7 +36,7 @@ Then conditionally includes fragments in this order:
 | actions > 0      | `📌 <count> action(s)> pending`                                          |
 | meeting          | `🗓️ <1 meeting happening now>` / `🗓️ <1 meeting today>` / `🗓️ <1 upcoming meeting> in X days` |
 | onboardingLeft > 0   | `Your onboarding is 🌀 <onboardingLeft% left>`                          |
-| isOutdated       | `some of your portfolio may be ⏱️ <outdated>`                            |
+| isOutdated       | `some of your portfolio may be ⏱️ <outdated>` or `Some of your portfolio may be ⏱️ <outdated>` when it appears alone |
 
 ### 3. Sentence Construction Rules
 
@@ -47,21 +47,46 @@ if (fragments.length === 0) {
   return (
     <>
       <div>Hi Rahul,</div>
-      <div>you are all caught up!</div>
+      <div>You are all caught up!</div>
     </>
   );
 }
 
 let messageContent;
 if (fragments.length === 1) {
-  messageContent = "You have " + fragments[0];
+  // Check if the fragment is onboarding or portfolio (which don't need "You have" prefix)
+  const fragmentKey = fragments[0].key;
+  if (fragmentKey === 'onboarding' || fragmentKey === 'outdated') {
+    messageContent = fragments[0];
+  } else {
+    messageContent = "You have " + fragments[0];
+  }
 } else if (fragments.length === 2) {
-  messageContent = "You have " + fragments.join(" and ");
+  // Check if both fragments are onboarding/portfolio (which don't need "You have" prefix)
+  const onlySpecialFragments = fragments.every(fragment => 
+    fragment.key === 'onboarding' || fragment.key === 'outdated'
+  );
+  
+  if (onlySpecialFragments) {
+    messageContent = fragments.join(" and ");
+  } else {
+    messageContent = "You have " + fragments.join(" and ");
+  }
 } else {
   // 3 or more items
   const fragmentsCopy = [...fragments];
   const last = fragmentsCopy.pop();
-  messageContent = "You have " + fragmentsCopy.join(", ") + " and " + last;
+  
+  // Check if all fragments are onboarding/portfolio (which don't need "You have" prefix)
+  const onlySpecialFragments = fragments.every(fragment => 
+    fragment.key === 'onboarding' || fragment.key === 'outdated'
+  );
+  
+  if (onlySpecialFragments) {
+    messageContent = fragmentsCopy.join(", ") + " and " + last;
+  } else {
+    messageContent = "You have " + fragmentsCopy.join(", ") + " and " + last;
+  }
 }
 
 return (
@@ -79,7 +104,7 @@ return (
 | Action Count             | #9D615C    | `📌 <span style="color:#9D615C">1 action</span> pending`       |
 | Onboarding Progress      | #A1B55C    | `Your onboarding is 🌀 <span style="color:#A1B55C">25% left</span>` |
 | Meeting Info             | #C7A865    | `🗓️ <span style="color:#C7A865">1 meeting today</span>` / `🗓️ <span style="color:#C7A865">1 upcoming meeting</span> in 3 days`    |
-| Outdated Portfolio Alert | #808FA3    | `some of your portfolio may be ⏱️ <span style="color:#808FA3">outdated</span>` |
+| Outdated Portfolio Alert | #808FA3    | `some of your portfolio may be ⏱️ <span style="color:#808FA3">outdated</span>` or `Some of your portfolio may be ⏱️ <span style="color:#808FA3">outdated</span>` when it appears alone |
 
 💡 UI/UX Overview
 
@@ -127,6 +152,13 @@ You have 📌 2 actions pending, 🗓️ 1 upcoming meeting in 3 days and Your o
   - `Your onboarding is` prepends onboarding percentage (in default color)
   - `in X days` is appended for meetings not today or now (in default color)
   - Use `upcoming meeting` instead of just `meeting` for future dates
+- Capitalization rules:
+  - "You are all caught up!" with capital Y
+  - "Some of your portfolio may be..." with capital S when it appears alone
+  - "some of your portfolio may be..." with lowercase s when it appears with other fragments
+- Prefix rules:
+  - No "You have" prefix when only onboarding and/or portfolio fragments are present
+  - "You have" prefix when actions or meetings are present
 - Onboarding:
   - Range is 1-50% (not 0-100%)
   - Hidden when value is 0%
@@ -137,11 +169,14 @@ You have 📌 2 actions pending, 🗓️ 1 upcoming meeting in 3 days and Your o
 
 | Scenario                                 | Expected Output                                                             |
 |------------------------------------------|------------------------------------------------------------------------------|
-| All empty                                | `Hi Rahul,`<br>`you are all caught up!`                                          |
+| All empty                                | `Hi Rahul,`<br>`You are all caught up!`                                          |
 | 1 action only                            | `Hi Rahul,`<br>`You have 📌 1 action pending`                                    |
 | Action + Meeting Today                   | `Hi Rahul,`<br>`You have 📌 1 action pending and 🗓️ 1 meeting today`             |
 | Meeting in Future                        | `Hi Rahul,`<br>`You have 🗓️ 1 upcoming meeting in 8 days`                        |
-| All 4 states                             | `Hi Rahul,`<br>`You have 📌 2 actions pending, 🗓️ 1 upcoming meeting in 3 days and Your onboarding is 🌀 25% left and some of your portfolio may be ⏱️ outdated` |
+| Onboarding only                          | `Hi Rahul,`<br>`Your onboarding is 🌀 25% left`                                  |
+| Portfolio outdated only                  | `Hi Rahul,`<br>`Some of your portfolio may be ⏱️ outdated`                       |
+| Onboarding + Portfolio                   | `Hi Rahul,`<br>`Your onboarding is 🌀 25% left and some of your portfolio may be ⏱️ outdated` |
+| All 4 states                             | `Hi Rahul,`<br>`You have 📌 2 actions pending, 🗓️ 1 upcoming meeting in 3 days, Your onboarding is 🌀 25% left and some of your portfolio may be ⏱️ outdated` |
 
 📎 File Organization
 
@@ -167,6 +202,8 @@ The Status Snippet Playground now reflects a consistent, modular sentence genera
 - Customized onboarding range (1-50%)
 - Editable meeting day input
 - "Upcoming meeting" phrasing for future dates
+- Proper capitalization ("You are all caught up!", "Some of your portfolio" when alone)
+- No redundant "You have" prefix for onboarding/portfolio-only messages
 - Fully modular UI and logic
 
 Perfect for aligning UX writing, frontend state logic, and edge case validation.

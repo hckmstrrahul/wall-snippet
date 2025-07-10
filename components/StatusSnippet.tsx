@@ -52,43 +52,88 @@ export default function StatusSnippet({ state }: { state: StatusState }) {
   }
   
   if (isOutdated) {
-    fragments.push(
-      <span key="outdated">
-        some of your portfolio may be ⏱️ <span className="text-outdated">outdated</span>
-      </span>
-    )
+    // Capitalize "Some" if it's the only fragment
+    if (fragments.length === 0 && actions === 0 && !meeting && (onboardingLeft === null || onboardingLeft === 0)) {
+      fragments.push(
+        <span key="outdated">
+          Some of your portfolio may be ⏱️ <span className="text-outdated">outdated</span>
+        </span>
+      )
+    } else {
+      fragments.push(
+        <span key="outdated">
+          some of your portfolio may be ⏱️ <span className="text-outdated">outdated</span>
+        </span>
+      )
+    }
   }
   
   // Format the message with proper grammar
   let messageContent;
   if (fragments.length === 0) {
-    messageContent = "you are all caught up!"
+    messageContent = "You are all caught up!"
   } else if (fragments.length === 1) {
-    messageContent = (
-      <>
-        You have {fragments[0]}
-      </>
-    )
+    // Check if the fragment is onboarding or portfolio (which don't need "You have" prefix)
+    const fragmentKey = fragments[0].key;
+    if (fragmentKey === 'onboarding' || fragmentKey === 'outdated') {
+      messageContent = fragments[0];
+    } else {
+      messageContent = (
+        <>
+          You have {fragments[0]}
+        </>
+      )
+    }
   } else if (fragments.length === 2) {
-    messageContent = (
-      <>
-        You have {fragments[0]} and {fragments[1]}
-      </>
-    )
+    // Check if both fragments are onboarding/portfolio (which don't need "You have" prefix)
+    const onlySpecialFragments = fragments.every(fragment => 
+      fragment.key === 'onboarding' || fragment.key === 'outdated'
+    );
+    
+    if (onlySpecialFragments) {
+      messageContent = (
+        <>
+          {fragments[0]} and {fragments[1]}
+        </>
+      )
+    } else {
+      messageContent = (
+        <>
+          You have {fragments[0]} and {fragments[1]}
+        </>
+      )
+    }
   } else {
     // 3 or more items
     const fragmentsCopy = [...fragments];
     const lastFragment = fragmentsCopy.pop();
     
-    messageContent = (
-      <>
-        You have {fragmentsCopy.map((fragment, index) => (
-          <React.Fragment key={index}>
-            {fragment}{index < fragmentsCopy.length - 1 ? ', ' : ''}
-          </React.Fragment>
-        ))} and {lastFragment}
-      </>
-    )
+    // Check if all fragments are onboarding/portfolio (which don't need "You have" prefix)
+    const onlySpecialFragments = fragments.every(fragment => 
+      fragment.key === 'onboarding' || fragment.key === 'outdated'
+    );
+    
+    if (onlySpecialFragments) {
+      messageContent = (
+        <>
+          {fragmentsCopy.map((fragment, index) => (
+            <React.Fragment key={index}>
+              {fragment}{index < fragmentsCopy.length - 1 ? ', ' : ''}
+            </React.Fragment>
+          ))} and {lastFragment}
+        </>
+      )
+    } else {
+      messageContent = (
+        <>
+          You have {fragmentsCopy.map((fragment, index) => (
+            <React.Fragment key={index}>
+              {fragment}{index < fragmentsCopy.length - 1 ? ', ' : ''}
+            </React.Fragment>
+          ))} and {lastFragment}
+        </>
+      )
+    }
   }
   
   return (

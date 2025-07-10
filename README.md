@@ -45,8 +45,17 @@ An interactive UI tool designed to dynamically generate a single sentence summar
 - Two-line format:
   - First line: "Hi Rahul,"
   - Second line: The rest of the message
-- If no state is active → "Hi Rahul, you are all caught up!"
-- If 1 item → "You have [fragment]"
-- If 2 items → "You have [fragment1] and [fragment2]"
-- If 3+ → "You have [fragment1], [fragment2] and [fragment3]" (no comma before "and")
-- No period at the end of sentences 
+- If no state is active → "Hi Rahul, You are all caught up!" (with capital Y)
+- If 1 item:
+  - For actions or meetings → "You have [fragment]"
+  - For onboarding or portfolio → "[fragment]" (no "You have" prefix)
+- If 2 items:
+  - If both are onboarding/portfolio → "[fragment1] and [fragment2]" (no "You have" prefix)
+  - If any is action/meeting → "You have [fragment1] and [fragment2]"
+- If 3+ items:
+  - If all are onboarding/portfolio → "[fragment1], [fragment2] and [fragment3]" (no "You have" prefix)
+  - If any is action/meeting → "You have [fragment1], [fragment2] and [fragment3]" 
+- No comma before "and" (Oxford comma not used)
+- No period at the end of sentences
+- "Some of your portfolio may be..." (with capital S) when it appears alone
+- "some of your portfolio may be..." (with lowercase s) when it appears with other fragments 
