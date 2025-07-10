@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+  --color-action: #9D615C;
+  --color-onboarding: #A1B55C;
+  --color-meeting: #C7A865;
+  --color-outdated: #808FA3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 30, 30, 30;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.text-action {
+  color: var(--color-action);
+}
+
+.text-onboarding {
+  color: var(--color-onboarding);
+}
+
+.text-meeting {
+  color: var(--color-meeting);
+}
+
+.text-outdated {
+  color: var(--color-outdated);
+} 
